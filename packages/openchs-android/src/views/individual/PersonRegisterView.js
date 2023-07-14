@@ -111,7 +111,7 @@ class PersonRegisterView extends AbstractComponent {
         const { individual } = this.state;
         if (individual?.that?.observations) {
           const result = individual.that.observations.find(
-            obj => obj.concept?.name === "ABHA number" && obj.valueJSON?.value
+            obj => obj.concept?.name === "ABHA Number" && obj.valueJSON?.value
           );
           return !!result;
         }
