@@ -29,8 +29,10 @@ class SettingsService extends BaseService {
                 settings.logLevel = InitialSettings.logLevel;
                 settings.pageSize = InitialSettings.pageSize;
                 settings.serverURL = Config.SERVER_URL;
+                settings.hipBaseURL = Config.HIP_BASE_URL;
                 settings.poolId = "";
                 settings.clientId = Config.CLIENT_ID || "";
+
             }
 
             if (EnvironmentConfig.isDevMode()) {

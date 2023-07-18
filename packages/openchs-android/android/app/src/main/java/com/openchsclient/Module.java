@@ -20,11 +20,12 @@ public class Module extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void invoke(String authToken) {
+    public void invoke(String authToken, String url) {
         ReactApplicationContext reactApplicationContext = getReactApplicationContext();
         Intent intent = new Intent(reactApplicationContext, CreateAbhaActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra("sessionToken", authToken);
+        intent.putExtra("hipBaseURL", url);
         reactApplicationContext.startActivity(intent);
     }
 }

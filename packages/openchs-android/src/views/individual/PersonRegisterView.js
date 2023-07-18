@@ -31,6 +31,7 @@ import SingleSelectMediaFormElement from "../form/formElement/SingleSelectMediaF
 import StaticFormElement from "../viewmodel/StaticFormElement";
 import EntityService from "../../service/EntityService";
 import AuthService from "../../service/AuthService";
+import SettingsService from "../../service/SettingsService";
 const { Module } = NativeModules;
 
 @Path('/personRegister')
@@ -103,8 +104,9 @@ class PersonRegisterView extends AbstractComponent {
 
     invokeModule = async () => {
         const authService = this.context.getService(AuthService);
+        const settings = this.context.getService(SettingsService);
         const authToken = await authService.getAuthProviderService().getAuthToken()
-        Module.invoke(authToken)
+        Module.invoke(authToken, settings.getSettings().hipBaseURL);
     }
 
     isButtonDisabled = () => {
