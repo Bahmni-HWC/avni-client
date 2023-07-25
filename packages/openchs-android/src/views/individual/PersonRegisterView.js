@@ -34,6 +34,7 @@ import AuthService from "../../service/AuthService";
 import SettingsService from "../../service/SettingsService";
 import {DeviceEventEmitter} from 'react-native';
 import { AddressLevel, Gender, getUnderlyingRealmCollection } from "openchs-models";
+import { getJSON } from "../../framework/http/requests";
 const { Module } = NativeModules;
 
 @Path('/personRegister')
@@ -142,11 +143,18 @@ class PersonRegisterView extends AbstractComponent {
         saveDraftOn ? onYesPress() : AvniAlert(this.I18n.t('backPressTitle'), this.I18n.t('backPressMessage'), onYesPress, this.I18n);
     }
 
+    async getABHANumbers() {
+        const serverUrl = this.getService(SettingsService).getSettings().serverURL;
+        const patientSubjects = await getJSON(`${serverUrl}/api/subjects?lastModifiedDateTime=2023-02-26T01:30:00.000Z&subjectType=Patient`);
+        return patientSubjects.content.filter(obj => obj.observations["ABHA Number"] != null).map(obj => obj.observations["ABHA Number"]);
+    }
+
     invokeModule = async () => {
         const authService = this.context.getService(AuthService);
         const settings = this.context.getService(SettingsService);
         const authToken = await authService.getAuthProviderService().getAuthToken()
-        Module.invoke(authToken, settings.getSettings().hipBaseURL);
+        const abhaNumbers = await this.getABHANumbers();
+        Module.invoke(authToken, abhaNumbers, settings.getSettings().hipBaseURL);
     }
 
     isButtonDisabled = () => {
