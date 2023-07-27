@@ -49,7 +49,7 @@ class SelectFormElement extends AbstractFormElement {
         return (
             <View style={{flexDirection: 'column', paddingBottom: Distances.ScaledVerticalSpacingBetweenOptionItems}}>
                 <FormElementLabelWithDocumentation element={this.props.element} />
-                {valueLabelPairs.length > 3 ? <AutocompleteSearch
+                {valueLabelPairs.length > 10 ? <AutocompleteSearch
                     isMulti={this.props.multiSelect}
                     items={valueLabelPairs}
                     uniqueKey={"value"}
