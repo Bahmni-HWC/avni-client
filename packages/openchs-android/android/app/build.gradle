@@ -98,6 +98,12 @@ android {
             keyAlias "${System.getenv("KEY_STORE_PREFIX") ?: ""}sakhi"
             keyPassword System.getenv("SAKHI_KEY_PASSWORD")
         }
+        bahmni {
+            storeFile file("${System.getenv("KEY_STORE_PREFIX") ?: ""}bahmni-release-key.keystore")
+            storePassword System.getenv("BAHMNI_KEYSTORE_PASSWORD")
+            keyAlias "${System.getenv("KEY_STORE_PREFIX") ?: ""}bahmni"
+            keyPassword System.getenv("BAHMNI_KEY_PASSWORD")
+        }
     }
     buildTypes {
         release {
@@ -125,6 +131,12 @@ android {
             applicationId "org.sakhi.openchsclient"
             resValue "string", "app_name", "Sakhi 2.0"
             signingConfig signingConfigs.sakhi
+            manifestPlaceholders = [bugsnagAPIKey: System.getenv("OPENCHS_CLIENT_BUGSNAG_API_KEY") ?: "dummy"]
+        }
+        bahmni {
+            applicationId "org.bahmni.openchsclient"
+            resValue "string", "app_name", "Bahmni Outreach"
+            signingConfig signingConfigs.bahmni
             manifestPlaceholders = [bugsnagAPIKey: System.getenv("OPENCHS_CLIENT_BUGSNAG_API_KEY") ?: "dummy"]
         }
     }
