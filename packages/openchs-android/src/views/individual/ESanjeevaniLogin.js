@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { View, Modal, Button, TextInput, Text, StyleSheet, TouchableWithoutFeedback, BackHandler } from 'react-native';
+import { View, Modal, Button, TextInput, Text, StyleSheet, TouchableWithoutFeedback, BackHandler, TouchableOpacity } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import SettingsService from "../../service/SettingsService";
 import AbstractComponent from "../../framework/view/AbstractComponent";
 import { getJSON } from "../../framework/http/requests";
@@ -8,6 +9,7 @@ import AuthService from "../../service/AuthService";
 import { WebView } from 'react-native-webview';
 import axios from 'axios';
 import Colors from "../primitives/Colors";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 class ESanjeevaniLogin extends AbstractComponent {
   static propTypes = {
@@ -22,7 +24,8 @@ class ESanjeevaniLogin extends AbstractComponent {
     this.state = {
       showWebView: false,
       webUrl: '',
-      error: null
+      error: null,
+      isChecked: false
     };
 
     this.webView = {
@@ -35,7 +38,9 @@ class ESanjeevaniLogin extends AbstractComponent {
 
     this.state = {
       username: '',
-      password: ''
+      password: '',
+      rememberPassword: false,
+      showPassword: false
     };
 
     if(this.getObservationValueWrapper("Postal code") == null) {
@@ -43,6 +48,35 @@ class ESanjeevaniLogin extends AbstractComponent {
     }
     this.handleBackButton = this.handleBackButton.bind(this);
   }
+
+  saveCredentials = async () => {
+    try {
+      await AsyncStorage.setItem('username', this.state.username);
+      await AsyncStorage.setItem('password', this.state.password);
+      console.log('Credentials saved successfully.');
+    } catch (error) {
+      console.error('Error saving credentials:', error);
+    }
+  };
+
+  loadSavedCredentials = async () => {
+    try {
+      const username = await AsyncStorage.getItem('username');
+      const password = await AsyncStorage.getItem('password');
+      if (username && password) {
+        this.setState({ username, password });
+        console.log('Credentials loaded successfully.');
+      }
+    } catch (error) {
+      console.error('Error loading credentials:', error);
+    }
+  };
+
+  handleButtonPress = () => {
+    this.setState({ showPassword: !this.state.showPassword });
+  };
+
+   
 
 
   async getAddress(locationUUID) {
@@ -99,6 +133,7 @@ class ESanjeevaniLogin extends AbstractComponent {
 
   componentDidMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    this.loadSavedCredentials();
   }
   
   componentWillUnmount() {
@@ -115,14 +150,24 @@ class ESanjeevaniLogin extends AbstractComponent {
 
     };
 
+    toggleCheckbox = () => {
+      const { isChecked } = this.state;
+      this.setState({ isChecked: !isChecked });
+      this.setState({ rememberPassword: !isChecked });
+    };
+
 
 
   handleLogin = async () => {
-    const { username, password } = this.state;
+    const { username, password, rememberPassword } = this.state;
 
     const { individual } = this.props;
 
     const addressMap = await this.getAddress(individual.lowestAddressLevel.uuid);
+
+    if (rememberPassword) {
+      this.saveCredentials();
+    }
 
     const loginData = {
       patient: {
@@ -149,20 +194,29 @@ class ESanjeevaniLogin extends AbstractComponent {
       }
     };
 
-    await this.callESanjeevani(loginData);
+    
+
+    await this.callESanjeevani({});
 
   };
 
   renderTextInput = (element, value, label, onInputChange, secureTextEntry = false) => (
-      <View>
-        <Text>{label}</Text>
-        <TextInput underlineColorAndroid={Colors.InputBorderNormal}
-        value={value}
-        onChangeText={(text) => onInputChange(text)} 
-        multiline={false}
-        secureTextEntry={secureTextEntry}
+    <View>
+      <Text>{label}</Text>
+      <View style={styles.inputContainer}>
+        <TextInput
+          underlineColorAndroid={Colors.InputBorderNormal}
+          value={value}
+          onChangeText={(text) => onInputChange(text)} 
+          multiline={false}
+          secureTextEntry={!this.state.showPassword && secureTextEntry}
+          style={styles.input}
         />
-        </View>
+        {secureTextEntry && <TouchableOpacity onPress={() => this.setState({ showPassword: !this.state.showPassword })}>
+          <Text>{this.state.showPassword ? 'Hide' : 'Show'}</Text>
+        </TouchableOpacity>}
+      </View>
+    </View>
   )
 
 
@@ -212,6 +266,12 @@ class ESanjeevaniLogin extends AbstractComponent {
           <View style={{ width: '80%' }}>
             {this.renderTextInput('username', this.state.username, 'Username', (text) => this.setState({ username: text }))}
             {this.renderTextInput('password', this.state.password, 'Password', (text) => this.setState({ password: text }), true)}
+            <TouchableOpacity onPress={this.toggleCheckbox} style={styles.checkboxContainer}>
+              <View style={[styles.checkbox, this.state.isChecked && styles.checked]}>
+                {this.state.isChecked && <Icon name="check" size={10} color="white" />}
+              </View>
+              <Text style={{marginLeft: 10}}>Remember Username and Password</Text>
+            </TouchableOpacity>
             <Button title="Login" onPress={this.handleLogin} />
 
             {this.state.error && (
@@ -251,9 +311,31 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white', // Close button text color
   },
+  checkboxContainer: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginRight: 10, 
+    paddingBottom: 10
+  },
+  checkbox: {
+    width: 15,
+    height: 15,
+    borderWidth: 1,
+    borderColor: '#24a0ed',
+   
+  },
+  checked: {
+    backgroundColor: '#24a0ed',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10, 
+    marginTop: 10,
+  },
   input: {
-    borderBottomWidth: 0.5, // Add a bottom border
-    borderColor: 'gray', // Border color
+    flex: 1, 
+    padding: 0, 
   }
 });
 
