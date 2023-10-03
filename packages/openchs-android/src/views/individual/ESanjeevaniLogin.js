@@ -43,7 +43,7 @@ class ESanjeevaniLogin extends AbstractComponent {
       showPassword: false
     };
 
-    if(this.getObservationValueWrapper("Postal code") == null) {
+    if(this.getObservationValueWrapper("Postal Code") == null) {
       this.state.error = "Postal code cannot be null"
     }
     this.handleBackButton = this.handleBackButton.bind(this);
@@ -99,7 +99,7 @@ class ESanjeevaniLogin extends AbstractComponent {
 
   async callESanjeevani(postData) {
     try {
-      const esanjeevaniServiceUrl = this.settings.getESaneevaniServieUrl();
+      const esanjeevaniServiceUrl = this.settings.getESaneevaniServiceUrl();
       const apiUrl = `${esanjeevaniServiceUrl}/registerAndLaunch`;
       const authToken = await this.authService.getAuthProviderService().getAuthToken()
 
@@ -186,7 +186,9 @@ class ESanjeevaniLogin extends AbstractComponent {
           subDistrict: addressMap["Sub District"],
           village: addressMap["City/Village"],
           postalCode: this.getObservationValueWrapper("Postal Code"),
-        }
+        },
+        abhaNumber: this.getObservationValueWrapper("ABHA Number"),
+        abhaAddress: this.getObservationValueWrapper("ABHA Address")
       },
       credentials: {
         username: username,
@@ -196,7 +198,7 @@ class ESanjeevaniLogin extends AbstractComponent {
 
     
 
-    await this.callESanjeevani({});
+    await this.callESanjeevani(loginData);
 
   };
 

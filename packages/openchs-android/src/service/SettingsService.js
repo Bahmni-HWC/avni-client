@@ -66,7 +66,7 @@ class SettingsService extends BaseService {
         return Config.HIP_BASE_URL;
     }
 
-    getESaneevaniServieUrl() {
+    getESaneevaniServiceUrl() {
         return Config.ESANJEEVANI_SERVICE_URL;
     }
 
