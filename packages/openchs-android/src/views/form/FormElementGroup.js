@@ -83,7 +83,6 @@ class FormElementGroup extends AbstractComponent {
                     }
                     else{
                         const key = map[data.that.name];
-                        console.log("key: " +key);
                         this.dispatchAction(Actions.PRIMITIVE_VALUE_CHANGE, { formElement: data, value: this.props.abhaResponse[key] });
                     }
                 });
