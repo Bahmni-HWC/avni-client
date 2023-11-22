@@ -6,7 +6,6 @@ on:
 
   workflow_dispatch:
 
-
 jobs:
   avni-apk:
     runs-on: ubuntu-latest
@@ -35,7 +34,7 @@ jobs:
         run: |
           export BAHMNI_KEYSTORE_PASSWORD=password
           export BAHMNI_KEY_PASSWORD=password
-          make release_urlconfig_universal flavor='bahmni'
+          make release_no_env_universal flavor='bahmni'
 
       - name: Upload APK as artifact
         uses: actions/upload-artifact@v2
