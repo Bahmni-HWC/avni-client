@@ -2,7 +2,7 @@ name: Sample GitHub Actions Workflow
 on:
   push:
     branches:
-      - BAH-3263-workflow
+      - master
 
   workflow_dispatch:
 
