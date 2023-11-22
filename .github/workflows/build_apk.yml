@@ -1,4 +1,4 @@
-name: Sample GitHub Actions Workflow
+name: Build apk for avni client
 on:
   push:
     branches:
@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  avni-apk:
+  generate-apk:
     runs-on: ubuntu-latest
 
     steps:
